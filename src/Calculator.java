@@ -17,7 +17,8 @@ public class Calculator {
 		Scanner scan = new Scanner(System.in);
 		boolean again = true;
 		String input;
-
+		
+		operators.put("(", 0);
 		operators.put("-", 1);
 		operators.put("+", 1);
 		operators.put("*", 2);
@@ -47,14 +48,14 @@ public class Calculator {
 		ArrayList<String> postfixEquation = InfixToPostfix(sepEquation);
 		System.out.println(postfixEquation);
 		Stack<Double> calc = new Stack<Double>();
-		Pattern p = Pattern.compile("[\\d.]+");
-
+		Pattern d = Pattern.compile("[\\d.]+");
+	
+		
 		for (int i = 0; i < postfixEquation.size(); i++) {
 			String s = postfixEquation.get(i);
-			Matcher m = p.matcher(s);
-
+			Matcher n = d.matcher(s);
 			// if element is a number push it onto stack
-			if (m.matches())
+			if (n.matches())
 				calc.push(Double.parseDouble(s));
 
 			// else take the two previous numbers and use the calculation on them
@@ -76,6 +77,7 @@ public class Calculator {
 					calc.push(val2 * val1);
 					break;
 				}
+				
 			}
 		}
 
@@ -96,7 +98,6 @@ public class Calculator {
 		for (int i = 0; i < infix.size(); i++) {
 			String s = infix.get(i);
 			Matcher a = p.matcher(s);
-
 			// checks if the element is a number and adds to postfix ArrayList
 			if (a.matches())
 				postfix.add(s);
@@ -116,8 +117,9 @@ public class Calculator {
 			// if an operator is encountered pops out until the next operator is less than
 			// or equal to the current being looked at
 			else {
-				while (!converter.empty() && operators.getOrDefault(infix.get(i), -1) >= operators.getOrDefault(converter.peek(), -1))
+				while (!converter.empty() && operators.getOrDefault(infix.get(i), -1) < operators.getOrDefault(converter.peek(), -1))
 					postfix.add(converter.pop());
+
 				converter.push(s);
 			}
 		}
@@ -140,9 +142,8 @@ public class Calculator {
 		ArrayList<String> sepE = new ArrayList<String>();
 		String number = "";
 		for (int i = 0; i < e.length(); i++) {
-			if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'
-					|| e.charAt(i) == '(' || e.charAt(i) == ')') {
-				if (number.length() != 0) {
+			if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'|| e.charAt(i) == '(' || e.charAt(i) == ')') {
+				if (number.length() != 0 && !number.equals(" ")) {
 					sepE.add((number));
 					number = "";
 				}
@@ -150,7 +151,8 @@ public class Calculator {
 			} else if (!(e.charAt(i) == ' '))
 				number += e.charAt(i);
 		}
-		sepE.add((number));
+		if(!number.equals("")) 
+			sepE.add((number));
 		return sepE;
 	}
 
