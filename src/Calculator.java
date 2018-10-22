@@ -4,7 +4,11 @@ import java.util.regex.*;
 
 /**
  * This is a calculator that can take in a user inputed string and solve it It
- * is able to calculate +, -, /, *, large numbers and decimal points
+ * is able to calculate +, -, /, *, large numbers, decimal points and negatives
+ * Additionally it will inform the user if they have 
+ * 1.Entered an operator the calculator does not recognize
+ * 2.Entered an equation that will end up with a division by zero
+ * 3.Entered an equation that does'nt make sense												
  * 
  * @author Jacob Brown
  *
@@ -32,7 +36,7 @@ public class Calculator {
 				try {
 				System.out.println(df.format(calculate(input)));
 				}catch(RuntimeException Failed){
-					System.err.println("RuntimeException " + Failed.getMessage());
+					System.err.println("RuntimeException: " + Failed.getMessage());
 				}
 			}
 			
@@ -49,9 +53,9 @@ public class Calculator {
 	 */
 	public static double calculate(String equation) throws RuntimeException{
 		ArrayList<String> sepEquation = SplitUp(equation);
-		//System.out.println(sepEquation);
+		System.out.println(sepEquation);
 		ArrayList<String> postfixEquation = InfixToPostfix(sepEquation);
-		//System.out.println(postfixEquation);
+		System.out.println(postfixEquation);
 		Stack<Double> calc = new Stack<Double>();
 		Pattern d = Pattern.compile("-?[\\d.]+");
 	
@@ -99,7 +103,7 @@ public class Calculator {
 	 * @param infix :Any ArrayList containing and infix equation
 	 * @return
 	 */
-	public static ArrayList<String> InfixToPostfix(ArrayList<String> infix)throws RuntimeException {
+	public static ArrayList<String> InfixToPostfix(ArrayList<String> infix) {
 		Pattern p = Pattern.compile("-?[\\d.]+");
 		ArrayList<String> postfix = new ArrayList<String>();
 		Stack<String> converter = new Stack<String>();
@@ -125,7 +129,7 @@ public class Calculator {
 			// if an operator is encountered pops out until the next operator is less than
 			// or equal to the current being looked at
 			else {
-				while (!converter.empty() && operators.getOrDefault(infix.get(i), -1) < operators.getOrDefault(converter.peek(), -1))
+				while (!converter.empty() && operators.getOrDefault(infix.get(i), -1) <= operators.getOrDefault(converter.peek(), -1))
 					postfix.add(converter.pop());
 
 				converter.push(s);
@@ -167,7 +171,7 @@ public class Calculator {
 					number = "";
 				}
 				
-				//ensures there are not two operators in a row
+				//ensures there are not two operators in a row excluding the case of ( and )
 				Matcher m = p.matcher(sepE.get(sepE.size() - 1));
 				if(m.matches() && (e.charAt(i) != ')' && e.charAt(i) != '(' )) 
 					throw new RuntimeException("You have two or more operators in a row. Please try again.");
