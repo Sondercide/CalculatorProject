@@ -22,14 +22,20 @@ public class Calculator {
 		operators.put("+", 1);
 		operators.put("*", 2);
 		operators.put("/", 2);
-
+		
+		System.out.println("Please enter an equation. Type no when you wish to stop.");
 		do {
-			System.out.println("Please enter an equation:");
 			input = scan.nextLine();
 			if (input.equals("no"))
 				again = false;
-			else
+			else {
+				try {
 				System.out.println(df.format(calculate(input)));
+				}catch(RuntimeException Failed){
+					System.err.println("RuntimeException " + Failed.getMessage());
+				}
+			}
+			
 		} while (again);
 
 		scan.close();
@@ -41,11 +47,11 @@ public class Calculator {
 	 * @param equation
 	 * @return
 	 */
-	public static double calculate(String equation) {
+	public static double calculate(String equation) throws RuntimeException{
 		ArrayList<String> sepEquation = SplitUp(equation);
-		System.out.println(sepEquation);
+		//System.out.println(sepEquation);
 		ArrayList<String> postfixEquation = InfixToPostfix(sepEquation);
-		System.out.println(postfixEquation);
+		//System.out.println(postfixEquation);
 		Stack<Double> calc = new Stack<Double>();
 		Pattern d = Pattern.compile("-?[\\d.]+");
 	
@@ -70,7 +76,10 @@ public class Calculator {
 					calc.push(val2 - val1);
 					break;
 				case '/':
-					calc.push(val2 / val1);
+					if(val1 == 0) 
+						throw new RuntimeException("You can not divide by zero. Sorry try again.");
+					else
+						calc.push(val2 / val1);
 					break;
 				case '*':
 					calc.push(val2 * val1);
@@ -90,7 +99,7 @@ public class Calculator {
 	 * @param infix :Any ArrayList containing and infix equation
 	 * @return
 	 */
-	public static ArrayList<String> InfixToPostfix(ArrayList<String> infix) {
+	public static ArrayList<String> InfixToPostfix(ArrayList<String> infix)throws RuntimeException {
 		Pattern p = Pattern.compile("-?[\\d.]+");
 		ArrayList<String> postfix = new ArrayList<String>();
 		Stack<String> converter = new Stack<String>();
@@ -137,21 +146,44 @@ public class Calculator {
 	 * @param e :Any equation
 	 * @return
 	 */
-	public static ArrayList<String> SplitUp(String e) {
+	public static ArrayList<String> SplitUp(String e) throws RuntimeException {
 		ArrayList<String> sepE = new ArrayList<String>();
 		String number = "";
+		Pattern p = Pattern.compile("[+-/*]");
 		for (int i = 0; i < e.length(); i++) {
-			if(e.charAt(i) == '-' && number.equals("")) 
+			
+			//skip spaces
+			if(e.charAt(i) == ' ')
+				continue;
+			
+			//check for negatives
+			else if(e.charAt(i) == '-' && number.equals("")) 
 				number += e.charAt(i);
+			
+			//check for operators, if yes add number to the array then the operator
 			else if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'|| e.charAt(i) == '(' || e.charAt(i) == ')') {
-				if (number.length() != 0 && !number.equals(" ")) {
+				if(!number.isEmpty()) {
 					sepE.add((number));
 					number = "";
 				}
+				
+				//ensures there are not two operators in a row
+				Matcher m = p.matcher(sepE.get(sepE.size() - 1));
+				if(m.matches() && (e.charAt(i) != ')' && e.charAt(i) != '(' )) 
+					throw new RuntimeException("You have two or more operators in a row. Please try again.");
 				sepE.add(e.substring(i, i + 1));
-			} else if (!(e.charAt(i) == ' '))
-				number += e.charAt(i);
+			} 
+			
+			//if the character is a digit or decimal add the character the the current number
+			else if(Character.isDigit(e.charAt(i)) || e.charAt(i) == '.')
+					number += e.charAt(i);
+			
+			//if none of the above the input contains something this calculator is unable to compute
+			else 
+				throw new RuntimeException("One or more character in the input is not compatible with this calculator. Please try again.");
 		}
+		
+		//add the remnants of number if it is not empty
 		if(!number.equals("")) 
 			sepE.add((number));
 		return sepE;
