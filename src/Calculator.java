@@ -18,7 +18,6 @@ public class Calculator {
 		boolean again = true;
 		String input;
 		
-		operators.put("(", 0);
 		operators.put("-", 1);
 		operators.put("+", 1);
 		operators.put("*", 2);
@@ -48,7 +47,7 @@ public class Calculator {
 		ArrayList<String> postfixEquation = InfixToPostfix(sepEquation);
 		System.out.println(postfixEquation);
 		Stack<Double> calc = new Stack<Double>();
-		Pattern d = Pattern.compile("[\\d.]+");
+		Pattern d = Pattern.compile("-?[\\d.]+");
 	
 		
 		for (int i = 0; i < postfixEquation.size(); i++) {
@@ -92,7 +91,7 @@ public class Calculator {
 	 * @return
 	 */
 	public static ArrayList<String> InfixToPostfix(ArrayList<String> infix) {
-		Pattern p = Pattern.compile("[\\d.]+");
+		Pattern p = Pattern.compile("-?[\\d.]+");
 		ArrayList<String> postfix = new ArrayList<String>();
 		Stack<String> converter = new Stack<String>();
 		for (int i = 0; i < infix.size(); i++) {
@@ -142,7 +141,9 @@ public class Calculator {
 		ArrayList<String> sepE = new ArrayList<String>();
 		String number = "";
 		for (int i = 0; i < e.length(); i++) {
-			if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'|| e.charAt(i) == '(' || e.charAt(i) == ')') {
+			if(e.charAt(i) == '-' && number.equals("")) 
+				number += e.charAt(i);
+			else if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'|| e.charAt(i) == '(' || e.charAt(i) == ')') {
 				if (number.length() != 0 && !number.equals(" ")) {
 					sepE.add((number));
 					number = "";
