@@ -160,13 +160,12 @@ public class Calculator {
 			if(e.charAt(i) == ' ')
 				continue;
 			
+
 			//check for negatives
-			else if((e.charAt(i) == '-' && number.equals(""))) {
-				if(sepE.isEmpty())
-					number += e.charAt(i);
-				else if(!sepE.get(sepE.size() - 1).equals(")"))
-					number += e.charAt(i);
-			}
+			else if(((e.charAt(i) == '-' && number.equals("")) && e.charAt(i) == e.charAt(0)) ||
+					((e.charAt(i) == '-' && number.equals("")) && (e.charAt(i-1) != ')')))
+				number += e.charAt(i);
+			
 			//check for operators, if yes add number to the array then the operator
 			else if (e.charAt(i) == '+' || e.charAt(i) == '-' || e.charAt(i) == '*' || e.charAt(i) == '/'|| e.charAt(i) == '(' || e.charAt(i) == ')') {
 				if(!number.isEmpty()) {
