@@ -161,7 +161,7 @@ public class Calculator {
 				continue;
 			
 			//check for negatives
-			else if(e.charAt(i) == '-' && number.equals("")) 
+			else if((e.charAt(i) == '-' && number.equals("")) && (e.charAt(i-1) != ')')) 
 				number += e.charAt(i);
 			
 			//check for operators, if yes add number to the array then the operator
